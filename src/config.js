@@ -1,12 +1,3 @@
-/**
- * React Starter Kit (https://www.reactstarterkit.com/)
- *
- * Copyright © 2014-present Kriasoft, LLC. All rights reserved.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE.txt file in the root directory of this source tree.
- */
-
 /* eslint-disable max-len */
 
 if (process.env.BROWSER) {
@@ -33,7 +24,8 @@ module.exports = {
   },
 
   // Database
-  databaseUrl: process.env.DATABASE_URL || 'sqlite:database.sqlite',
+  databaseUrl:
+    process.env.DATABASE_URL || 'mysql://root:root@127.0.0.1:3306/agora',
 
   // Web analytics
   analytics: {
@@ -43,7 +35,10 @@ module.exports = {
 
   // Authentication
   auth: {
-    jwt: { secret: process.env.JWT_SECRET || 'React Starter Kit' },
+    jwt: {
+      secret: 'agora_jwt_secret_1njsidfg8234ni',
+    },
+    bcrypt: { saltRounds: 10 },
 
     // https://developers.facebook.com/
     facebook: {

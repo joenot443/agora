@@ -1,14 +1,7 @@
-/**
- * React Starter Kit (https://www.reactstarterkit.com/)
- *
- * Copyright © 2014-present Kriasoft, LLC. All rights reserved.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE.txt file in the root directory of this source tree.
- */
-
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Provider as ReduxProvider } from 'react-redux';
+import { ApolloProvider } from 'react-apollo';
 
 const ContextType = {
   // Enables critical path CSS rendering
@@ -18,6 +11,11 @@ const ContextType = {
   fetch: PropTypes.func.isRequired,
   pathname: PropTypes.string.isRequired,
   query: PropTypes.object,
+  // Integrate Redux
+  // http://redux.js.org/docs/basics/UsageWithReact.html
+  ...ReduxProvider.childContextTypes,
+  // Apollo Client
+  client: PropTypes.object.isRequired,
 };
 
 /**
@@ -55,9 +53,13 @@ class App extends React.PureComponent {
   }
 
   render() {
+    // Here, we are at universe level, sure? ;-)
+    const { client } = this.props.context;
     // NOTE: If you need to add or modify header, footer etc. of the app,
     // please do that inside the Layout component.
-    return React.Children.only(this.props.children);
+    return (
+      <ApolloProvider client={client}>{this.props.children}</ApolloProvider>
+    );
   }
 }
 

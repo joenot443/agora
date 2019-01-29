@@ -1,4 +1,4 @@
-import { User, UserClaim, UserLogin, UserProfile } from 'data/models';
+import { User, UserProfile } from 'data/models';
 
 export const queries = [
   `
@@ -17,12 +17,8 @@ export const resolvers = {
 
       // Find logged in user from database
       const dbUser = await User.findOne({
-        where: { email: context.user.email },
-        include: [
-          { model: UserLogin, as: 'logins' },
-          { model: UserClaim, as: 'claims' },
-          { model: UserProfile, as: 'profile' },
-        ],
+        where: { username: context.user.username },
+        include: [{ model: UserProfile, as: 'profile' }],
       });
 
       return dbUser;

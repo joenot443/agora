@@ -1,34 +1,14 @@
-import { User, UserClaim, UserLogin, UserProfile } from 'data/models';
+import { User, UserProfile } from 'data/models';
 
 export const schema = [
   `
   # A user stored in the local database
   type DatabaseUser {
     id: String
-    email: String
-    emailConfirmed: Boolean
-    logins: [DatabaseUserLogin]
-    claims: [DatabaseUserClaim]
+    username: String
     profile: DatabaseUserProfile
     updatedAt: String
     createdAt: String
-  }
-
-  type DatabaseUserLogin {
-    name: String
-    key: String
-    createdAt: String
-    updatedAt: String
-    userId: String
-  }
-
-  type DatabaseUserClaim {
-    id: Int
-    type: String
-    value: String
-    createdAt: String
-    updatedAt: String
-    userId: String
   }
 
   type DatabaseUserProfile {
@@ -61,22 +41,14 @@ export const resolvers = {
   RootQuery: {
     async databaseGetAllUsers() {
       const users = await User.findAll({
-        include: [
-          { model: UserLogin, as: 'logins' },
-          { model: UserClaim, as: 'claims' },
-          { model: UserProfile, as: 'profile' },
-        ],
+        include: [{ model: UserProfile, as: 'profile' }],
       });
       return users;
     },
     async databaseGetUser(parent, { email }) {
       const user = await User.findOne({
         where: { email },
-        include: [
-          { model: UserLogin, as: 'logins' },
-          { model: UserClaim, as: 'claims' },
-          { model: UserProfile, as: 'profile' },
-        ],
+        include: [{ model: UserProfile, as: 'profile' }],
       });
       return user;
     },

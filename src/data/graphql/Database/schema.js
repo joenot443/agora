@@ -11,21 +11,33 @@ import {
   resolvers as GetLoggedInUserResolver,
 } from './users/GetLoggedInUser';
 
-/** * Mutations ** */
 import {
-  schema as CreateUserInput,
-  mutation as CreateUser,
-  resolvers as CreateUserResolver,
-} from './users/CreateUser';
+  schema as CreateLecture,
+  mutations as CreateLectureMutation,
+  resolvers as CreateLectureResolver,
+} from './lectures/CreateLecture';
 
-export const schema = [...GetAllUsers, ...CreateUserInput];
+import {
+  schema as ResolveLecture,
+  queries as ResolveLectureQueries,
+  resolvers as ResolveLectureResolver,
+} from './lectures/ResolveLecture';
 
-export const queries = [...GetAllUsersQueries, ...GetLoggedInUserQueries];
+/** * Mutations ** */
 
-export const mutations = [...CreateUser];
+export const schema = [...GetAllUsers, ...ResolveLecture];
+
+export const queries = [
+  ...GetAllUsersQueries,
+  ...GetLoggedInUserQueries,
+  ...ResolveLectureQueries,
+];
+
+export const mutations = [...CreateLectureMutation];
 
 export const resolvers = merge(
   GetAllUsersResolver,
   GetLoggedInUserResolver,
-  CreateUserResolver,
+  CreateLectureResolver,
+  ResolveLectureResolver,
 );

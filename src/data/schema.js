@@ -1,5 +1,6 @@
 import { merge } from 'lodash';
 import { makeExecutableSchema } from 'graphql-tools';
+import { GraphQLDate, GraphQLTime, GraphQLDateTime } from 'graphql-iso-date';
 
 import {
   schema as NewsSchema,
@@ -49,6 +50,18 @@ const Mutation = [
 `,
 ];
 
+const DateScalars = [
+  `scalar GraphQLDate
+  scalar GraphQLTime
+  scalar GraphQLDateTime`,
+];
+
+const DateResolvers = {
+  GraphQLDate,
+  GraphQLTime,
+  GraphQLDateTime,
+};
+
 const SchemaDefinition = [
   `
   schema {
@@ -60,16 +73,20 @@ const SchemaDefinition = [
 
 // Merge all of the resolver objects together
 // Put schema together into one array of schema strings
-const resolvers = merge(NewsResolvers, DatabaseResolvers);
+const resolvers = merge(NewsResolvers, DatabaseResolvers, DateResolvers);
 
 const schema = [
   ...SchemaDefinition,
+  ...DateScalars,
   ...RootQuery,
   ...Mutation,
 
   ...NewsSchema,
   ...DatabaseSchema,
 ];
+
+console.info(schema);
+// console.info(resolvers);
 
 export default makeExecutableSchema({
   typeDefs: schema,

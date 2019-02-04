@@ -1,5 +1,6 @@
 import path from 'path';
 import express from 'express';
+import fs from 'fs';
 import browserSync from 'browser-sync';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
@@ -208,6 +209,10 @@ async function start() {
       {
         // https://www.browsersync.io/docs/options
         server: 'src/server.js',
+        https: {
+          key: '/etc/agora/localhost.key',
+          cert: '/etc/agora/localhost.crt',
+        },
         middleware: [server],
         open: !process.argv.includes('--silent'),
         ...(isDebug ? {} : { notify: false, ui: false }),

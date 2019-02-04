@@ -29,6 +29,7 @@
     "express": "^4.16.3",
     "express-graphql": "^0.6.12",
     "express-jwt": "^5.3.1",
+    "express-ws": "^4.0.0",
     "graphql": "^0.13.2",
     "graphql-iso-date": "^3.6.1",
     "graphql-tag": "^2.6.1",
@@ -36,6 +37,8 @@
     "history": "^4.7.2",
     "isomorphic-style-loader": "^4.0.0",
     "jsonwebtoken": "^8.3.0",
+    "kurento-client": "^6.9.0",
+    "kurento-utils": "^6.9.0",
     "lodash": "^4.17.5",
     "mysql2": "^1.6.4",
     "node-fetch": "^2.1.2",
@@ -59,7 +62,9 @@
     "sqlite3": "^4.0.0",
     "superagent": "^4.1.0",
     "universal-router": "^6.0.0",
-    "whatwg-fetch": "^2.0.4"
+    "uuid": "^3.3.2",
+    "whatwg-fetch": "^2.0.4",
+    "ws": "^6.1.3"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.51",
@@ -184,6 +189,7 @@
     "deploy": "babel-node tools/run deploy",
     "render": "babel-node tools/run render",
     "serve": "babel-node tools/run runServer",
-    "start": "babel-node tools/run start"
+    "start": "babel-node tools/run start",
+    "debug": "babel-node --inspect tools/run start"
   }
 }

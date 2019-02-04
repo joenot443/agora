@@ -6,9 +6,13 @@ import bodyParser from 'body-parser';
 import expressJwt, { UnauthorizedError as Jwt401Error } from 'express-jwt';
 import { graphql } from 'graphql';
 import expressGraphQL from 'express-graphql';
+import ws from 'ws';
+import https from 'https';
+import fs from 'fs';
 import jwt from 'jsonwebtoken';
 import nodeFetch from 'node-fetch';
 import React from 'react';
+import expressWs from 'express-ws';
 import ReactDOM from 'react-dom/server';
 import { getDataFromTree } from 'react-apollo';
 import PrettyError from 'pretty-error';
@@ -28,6 +32,7 @@ import configureStore from './store/configureStore';
 import { setRuntimeVariable } from './actions/runtime';
 import config from './config';
 import apiRouter from './api';
+import setUpWSS from './live/wss';
 
 process.on('unhandledRejection', (reason, p) => {
   console.error('Unhandled Rejection at:', p, 'reason:', reason);
@@ -41,8 +46,13 @@ process.on('unhandledRejection', (reason, p) => {
 // -----------------------------------------------------------------------------
 global.navigator = global.navigator || {};
 global.navigator.userAgent = global.navigator.userAgent || 'all';
+global.window = {};
 
 const app = express();
+
+// Set up WSS
+
+setUpWSS();
 
 // Set CORS headers
 
@@ -248,6 +258,10 @@ if (!module.hot) {
   promise.then(() => {
     app.listen(config.port, () => {
       console.info(`The server is running at http://localhost:${config.port}/`);
+    });
+    // Launch the server with HTTPS as well
+    https.createServer(httpsOptions).listen(443, () => {
+      console.info(`The server is running at http://localhost:443/`);
     });
   });
 }

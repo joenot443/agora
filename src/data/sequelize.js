@@ -3,6 +3,8 @@ import config from '../config';
 
 const sequelize = new Sequelize(config.databaseUrl, {
   operatorsAliases: Op,
+  logging: false,
+
   define: {
     freezeTableName: true,
   },

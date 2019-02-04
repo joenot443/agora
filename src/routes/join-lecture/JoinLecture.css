@@ -1,0 +1,6 @@
+@import '../../components/variables.css';
+
+.content {
+  display: flex;
+  flex-direction: row;
+}

@@ -24,8 +24,7 @@ module.exports = {
   },
 
   // Database
-  databaseUrl:
-    process.env.DATABASE_URL || 'mysql://root:root@127.0.0.1:3306/agora',
+  databaseUrl: process.env.DATABASE_URL || 'mysql://root@127.0.0.1:3306/agora',
 
   // Web analytics
   analytics: {

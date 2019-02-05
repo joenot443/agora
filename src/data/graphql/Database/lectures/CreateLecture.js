@@ -1,3 +1,5 @@
+import { Lecture } from 'data/models';
+
 export const schema = [
   `
 `,
@@ -5,19 +7,14 @@ export const schema = [
 
 export const mutations = [
   `
-  # Creates a new user and profile in the local database
+  # Creates a new lecture in the local database
   databaseCreateLecture(
-    # A display name for the logged-in user
+    # A name for the lecture
     title: String!
 
-    # A profile picture URL
+    # A picture URL
     description: String
 
-    # The user's location
-    location: String
-
-    # A website URL
-    website: String
   ): Lecture
 `,
 ];
@@ -25,28 +22,15 @@ export const mutations = [
 export const resolvers = {
   Mutation: {
     async databaseCreateLecture(parent, args) {
-      // If user already exists, throw error
-      //   const lookupUser = await User.findOne({ where: { email: args.email } });
+      // Create new user with profile in database
+      const lecture = await Lecture.create({
+        title: 'lecture title 1',
+        description: 'desc',
+        startTime: 'ok',
+        url: 'url',
+      });
 
-      //   if (lookupUser) {
-      //     // eslint-disable-next-line no-throw-literal
-      //     throw 'User already exists!';
-      //   }
-
-      //   // Create new user with profile in database
-      //   const user = await User.create(
-      //     {
-      //       email: args.email,
-      //       profile: {
-      //         ...args.profile,
-      //       },
-      //     },
-      //     {
-      //       include: [{ model: UserProfile, as: 'profile' }],
-      //     },
-      //   );
-
-      return null;
+      return lecture;
     },
   },
 };

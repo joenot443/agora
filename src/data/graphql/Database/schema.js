@@ -6,6 +6,7 @@ import {
   queries as GetAllUsersQueries,
   resolvers as GetAllUsersResolver,
 } from './users/GetAllUsers';
+
 import {
   queries as GetLoggedInUserQueries,
   resolvers as GetLoggedInUserResolver,

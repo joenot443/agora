@@ -24,8 +24,7 @@ module.exports = {
   },
 
   // Database
-  databaseUrl:
-    process.env.DATABASE_URL || 'mysql://root:root@127.0.0.1:3306/agora',
+  databaseUrl: process.env.DATABASE_URL || 'mysql://root@127.0.0.1:3306/agora',
 
   // Kurento
   kurentoUrl: process.env.KURENTO_URL || 'ws://54.144.111.94:8888/kurento',

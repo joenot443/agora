@@ -20,12 +20,12 @@ class Header extends React.Component {
               height="38"
               alt="React"
             />
-            <span className={s.brandTxt}>Software Capstone Group 9</span>
+            <span className={s.brandTxt}>Agora</span>
           </Link>
-          <div className={s.banner}>
+          {/* <div className={s.banner}>
             <h1 className={s.bannerTitle}>Agora</h1>
             <p className={s.bannerDesc}>Host your lectures with ease</p>
-          </div>
+    </div> */}
         </div>
       </div>
     );

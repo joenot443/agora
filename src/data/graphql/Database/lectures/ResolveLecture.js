@@ -6,8 +6,8 @@ export const schema = [
       id: String
       username: String
       profile: DatabaseUserProfile
-      updatedAt: String
-      createdAt: String
+      #updatedAt: String
+      #createdAt: String
     }
   `,
 ];

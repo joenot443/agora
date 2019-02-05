@@ -40,6 +40,9 @@ router.post('/login', async (req, res) => {
     }
 
     const token = tokenForUser(user);
+
+    console.log(token);
+
     res.cookie('id_token', token);
     res.json({
       success: true,
@@ -76,6 +79,7 @@ router.post('/register', async (req, res) => {
     });
 
     const token = tokenForUser(user);
+
     res.cookie('id_token', token);
     res.json({
       success: true,

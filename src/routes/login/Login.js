@@ -1,8 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
-import superagent from 'superagent';
 import s from './Login.css';
+
+import { connect } from 'react-redux';
+import { login } from '../../actions/auth';
 
 class Login extends React.Component {
   static propTypes = {
@@ -21,9 +23,11 @@ class Login extends React.Component {
   handleSubmit = async e => {
     e.preventDefault();
     console.info(this.state);
-    const response = await superagent
-      .post('/login')
-      .send({ username: this.state.username, password: this.state.password });
+
+    this.setState({ errors: {}, isLoading: true });
+    const response = await this.props.login(this.state);
+    console.log('login response:');
+    console.log(response);
   };
 
   render() {
@@ -71,4 +75,11 @@ class Login extends React.Component {
   }
 }
 
-export default withStyles(s)(Login);
+Login.propTypes = {
+  login: PropTypes.func.isRequired,
+};
+
+export default connect(
+  null,
+  { login },
+)(withStyles(s)(Login));

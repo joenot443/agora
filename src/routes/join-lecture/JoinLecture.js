@@ -121,7 +121,7 @@ class JoinLecture extends React.Component {
         <div className={s.container}>
           <h1>{this.props.title}</h1>
           <div className={s.content}>
-            <video id="video" autoPlay width="640px" height="480px" />
+            <video id="video" autoPlay width="640px" height="480px" controls />
             <Chatroom />
           </div>
         </div>

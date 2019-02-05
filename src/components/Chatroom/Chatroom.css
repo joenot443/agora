@@ -51,7 +51,7 @@
 }
 
 .Messages-message.currentMember {
-  /*justify-content: flex-end;*/
+  justify-content: flex-end;
   flex-direction: row-reverse;
   text-align: right;
 }

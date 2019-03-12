@@ -50,10 +50,6 @@ global.window = {};
 
 const app = express();
 
-// Set up WSS
-
-setUpWSS();
-
 // Set CORS headers
 
 app.use((req, res, next) => {
@@ -86,16 +82,16 @@ app.use(
   expressJwt({
     secret: config.auth.jwt.secret,
     credentialsRequired: false,
-    getToken: req => req.cookies.id_token,
+    getToken: req => req.cookies.token,
   }),
 );
 // Error handler for express-jwt
 app.use((err, req, res, next) => {
   // eslint-disable-line no-unused-vars
   if (err instanceof Jwt401Error) {
-    console.error('[express-jwt-error]', req.cookies.id_token);
+    console.error('[express-jwt-error]', req.cookies.token);
     // `clearCookie`, otherwise user can't use web-app until cookie expires
-    res.clearCookie('id_token');
+    res.clearCookie('token');
   }
   next(err);
 });
@@ -263,6 +259,9 @@ if (!module.hot) {
     https.createServer(httpsOptions).listen(443, () => {
       console.info(`The server is running at http://localhost:443/`);
     });
+
+    // Set up WSS
+    setUpWSS();
   });
 }
 

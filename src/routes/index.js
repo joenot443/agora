@@ -19,6 +19,10 @@ const routes = {
       load: () => import(/* webpackChunkName: 'login' */ './login'),
     },
     {
+      path: '/logout',
+      load: () => import(/* webpackChunkName: 'logout' */ './logout'),
+    },
+    {
       path: '/register',
       load: () => import(/* webpackChunkName: 'register' */ './register'),
     },
@@ -43,6 +47,10 @@ const routes = {
       path: '/join-lecture',
       load: () =>
         import(/* webpackChunkName: 'join-lecture' */ './join-lecture'),
+    },
+    {
+      path: '/new-lecture',
+      load: () => import(/* webpackChunkName: 'new-lecture' */ './new-lecture'),
     },
 
     // Wildcard routes, e.g. { path: '(.*)', ... } (must go last)

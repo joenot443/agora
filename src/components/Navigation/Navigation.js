@@ -3,18 +3,12 @@ import cx from 'classnames';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Navigation.css';
 import Link from '../Link';
+import isLoggedIn from '../../util/isLoggedIn';
 
 class Navigation extends React.Component {
   render() {
-    return (
-      <div className={s.root} role="navigation">
-        {/* <Link className={s.link} to="/about">
-          About
-        </Link>
-        <Link className={s.link} to="/contact">
-          Contact
-        </Link> */}
-        <span className={s.spacer}> | </span>
+    const loginRegisterLinks = (
+      <span>
         <Link className={s.link} to="/login">
           Log in
         </Link>
@@ -22,6 +16,19 @@ class Navigation extends React.Component {
         <Link className={cx(s.link, s.highlight)} to="/register">
           Sign up
         </Link>
+      </span>
+    );
+    const profileLink = (
+      <span>
+        <Link className={s.link} to="/profile">
+          Profile
+        </Link>
+      </span>
+    );
+    return (
+      <div className={s.root} role="navigation">
+        <span className={s.spacer}> | </span>
+        {isLoggedIn ? profileLink : loginRegisterLinks}
       </div>
     );
   }

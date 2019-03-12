@@ -4,6 +4,9 @@ import webpack from 'webpack';
 import WebpackAssetsManifest from 'webpack-assets-manifest';
 import nodeExternals from 'webpack-node-externals';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+import lessToJS from 'less-vars-to-js';
+
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import overrideRules from './lib/overrideRules';
 import pkg from '../package.json';
 
@@ -21,6 +24,15 @@ const reScript = /\.(js|jsx|mjs)$/;
 const reGraphql = /\.(graphql|gql)$/;
 const reStyle = /\.(css|less|styl|scss|sass|sss)$/;
 const reImage = /\.(bmp|gif|jpg|jpeg|png|svg)$/;
+
+const antThemeVars = lessToJS(
+  fs
+    .readFileSync(
+      path.resolve(SRC_DIR, 'components/antThemeVariables.scss'),
+      'utf8',
+    )
+    .replace(/\$/gi, '@'),
+);
 
 const staticAssetName = isDebug
   ? '[path][name].[ext]?[hash:8]'
@@ -57,7 +69,8 @@ const config = {
   resolve: {
     // Allow absolute paths in imports, e.g. import Button from 'components/Button'
     // Keep in sync with .flowconfig and .eslintrc
-    modules: ['node_modules', 'src'],
+    modules: ['src', 'src/components', 'node_modules'],
+    extensions: ['.js', '.jsx', '.less'],
   },
 
   module: {
@@ -122,13 +135,41 @@ const config = {
         loader: 'graphql-tag/loader',
       },
 
+      // Compile Less to CSS
+      // https://github.com/webpack-contrib/less-loader
+      // Install dependencies before uncommenting: yarn add --dev less-loader less
+
+      // // Tell the DEFAULT sass-rule to ignore being used for sass imports in less files (sounds weird)
+      // {
+      //   test: /\.scss$/,
+      //   issuer: {
+      //     exclude: /\.less$/,
+      //   },
+      // },
+
+      // // Define a second rule for only being used from less files
+      // // This rule will only be used for converting our sass-variables to less-variables
+      // {
+      //   test: /\.scss$/,
+      //   issuer: /\.less$/,
+      //   use: {
+      //     loader: resolvePath(SRC_DIR, 'components/sassVarsToLess.js'), // Change path if necessary
+      //   },
+      // },
+
       // Rules for Style Sheets
       {
         test: reStyle,
         rules: [
+          {
+            test: /\.css$/,
+            include: [/node_modules\/.*antd/],
+            loader: 'style-loader',
+          },
           // Convert CSS into JS module
           {
             issuer: { not: [reStyle] },
+            exclude: [/node_modules\/.*antd/],
             use: 'isomorphic-style-loader',
           },
 
@@ -170,21 +211,13 @@ const config = {
             },
           },
 
-          // Compile Less to CSS
-          // https://github.com/webpack-contrib/less-loader
-          // Install dependencies before uncommenting: yarn add --dev less-loader less
-          // {
-          //   test: /\.less$/,
-          //   loader: 'less-loader',
-          // },
-
           // Compile Sass to CSS
           // https://github.com/webpack-contrib/sass-loader
           // Install dependencies before uncommenting: yarn add --dev sass-loader node-sass
-          // {
-          //   test: /\.(scss|sass)$/,
-          //   loader: 'sass-loader',
-          // },
+          {
+            test: /\.(scss|sass)$/,
+            loader: 'sass-loader',
+          },
         ],
       },
 
@@ -311,6 +344,10 @@ const clientConfig = {
   },
 
   plugins: [
+    new MiniCssExtractPlugin({
+      filename: '[name].css',
+      chunkFilename: '[name].css',
+    }),
     // Define free variables
     // https://webpack.js.org/plugins/define-plugin/
     new webpack.DefinePlugin({
@@ -502,5 +539,18 @@ const serverConfig = {
     __dirname: false,
   },
 };
+
+// Only use babel-plugin-import in client side
+clientConfig.module.rules[0].options.plugins = [
+  ...clientConfig.module.rules[0].options.plugins,
+  [
+    'import',
+    {
+      libraryName: 'antd',
+      libraryDirectory: 'es',
+      style: 'css',
+    },
+  ],
+];
 
 export default [clientConfig, serverConfig];

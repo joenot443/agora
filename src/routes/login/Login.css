@@ -147,3 +147,7 @@
   border-bottom: 1px solid #ddd;
   content: '';
 }
+
+.message {
+  color: #555;
+}

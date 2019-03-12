@@ -14,6 +14,9 @@ const Lecture = Model.define('Lecture', {
   url: {
     type: DataType.STRING,
   },
+  live: {
+    type: DataType.BOOLEAN,
+  },
 });
 
 export default Lecture;

@@ -1,17 +1,16 @@
 import React from 'react';
 import Layout from '../../components/Layout';
-import Login from './Login';
-import isLoggedIn from '../../util/isLoggedIn';
+import NewLecture from './NewLecture';
 
-const title = 'Log In';
+const title = 'New Lecture';
 
 function action() {
   return {
-    chunks: ['login'],
+    chunks: ['new-lecture'],
     title,
     component: (
       <Layout>
-        <Login title={title} loggedIn={isLoggedIn()} />
+        <NewLecture />
       </Layout>
     ),
   };

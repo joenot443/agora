@@ -24,12 +24,13 @@ router.get('/lectures', async (req, res) => {
   }
 });
 
-router.post('/createLecture', async (req, res) => {
+router.post('/lectures/new', async (req, res) => {
   try {
+    console.info(req);
     const lecture = await Lecture.create({
-      title: 'lecture title 1',
-      description: 'desc',
-      url: 'url',
+      title: req.body.title,
+      description: req.body.description,
+      startTime: req.body.startTime,
     });
 
     res.json({

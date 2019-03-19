@@ -1,2 +1,6 @@
 @import '../../components/variables.css';
 @import '../join-lecture/JoinLecture.css';
+
+.root {
+  display: auto;
+}

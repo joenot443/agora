@@ -40,13 +40,23 @@ const routes = {
     },
     {
       path: '/host-lecture',
-      load: () =>
-        import(/* webpackChunkName: 'host-lecture' */ './host-lecture'),
+      children: [
+        {
+          path: '/(.*)',
+          load: () =>
+            import(/* webpackChunkName: 'host-lecture' */ './host-lecture'),
+        },
+      ],
     },
     {
       path: '/join-lecture',
-      load: () =>
-        import(/* webpackChunkName: 'join-lecture' */ './join-lecture'),
+      children: [
+        {
+          path: '/(.*)',
+          load: () =>
+            import(/* webpackChunkName: 'join-lecture' */ './join-lecture'),
+        },
+      ],
     },
     {
       path: '/new-lecture',

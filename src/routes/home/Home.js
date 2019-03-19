@@ -6,29 +6,34 @@ import { Button } from 'antd';
 import superagent from 'superagent';
 
 import s from './Home.css';
-import Preview from '../../components/Lecture/Preview/Preview';
+import LecturePreview from '../../components/LecturePreview/LecturePreview';
 
 class Home extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       lectures: [],
+      message: null,
     };
   }
 
   componentDidMount = async () => {
-    if (!this.state.lectures.length) {
-      const lectures = (await superagent.get('/lectures')).body.data;
-      this.setState({ lectures });
-    }
+    const response = (await superagent.get('/api/lectures/active')).body;
+    if (response.success && response.data.length)
+      this.setState({ lectures: response.data });
+    else this.setState({ message: response.message });
   };
 
   render() {
     return (
       <div className={s.root}>
         <div className={s.container}>
-          <h1>Upcoming Lectures</h1>
-          {this.state.lectures.map(l => <Preview data={l} />)}
+          <h1>Live Lectures</h1>
+          {this.state.lectures.length ? (
+            this.state.lectures.map(l => <LecturePreview {...l} />)
+          ) : (
+            <h4>{this.state.message}</h4>
+          )}
         </div>
       </div>
     );

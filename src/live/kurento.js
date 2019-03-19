@@ -1,6 +1,8 @@
 import kurento from 'kurento-client';
 import config from '../config';
 import uuid from 'uuid/v1';
+import Lecture from '../data/models/Lecture';
+
 import {
   PRESENTER_RESPONSE,
   VIEWER_RESPONSE,
@@ -13,6 +15,10 @@ const WEB_RTC_ENDPOINT = 'WebRtcEndpoint';
 const ON_ICE_CANDIDATE = 'OnIceCandidate';
 const ICE_CANDIDATE_TYPE = 'IceCandidate';
 const ICE_CANDIDATE_EVENT = 'iceCandidate';
+const CONNECTION_STATE_CHANGED = 'MediaStateChanged';
+
+const CONNECTED = 'DISCONNECTED';
+const DISCONNECTED = 'DISCONNECTED';
 
 const activeLectures = {};
 const activeViewers = {};
@@ -64,6 +70,25 @@ async function handleIceCandidate(message) {
   }
 }
 
+async function setLectureActive(lectureId, active) {
+  const lecture = await Lecture.findOne({
+    where: { id: Number.parseInt(lectureId) },
+  });
+  if (!lecture) {
+    console.info(`No lecture for id ${lectureId}`);
+    return;
+  }
+  lecture.live = active;
+  await lecture.save();
+}
+
+async function onMediaStateChanged(state, lectureId) {
+  if (state.newState === DISCONNECTED && activeLectures[lectureId]) {
+    delete activeLectures[lectureId];
+    setLectureActive(lectureId, false);
+  }
+}
+
 async function hostLecture(lectureId, sdpOffer, ws) {
   const presenter = {
     lectureId,
@@ -72,8 +97,6 @@ async function hostLecture(lectureId, sdpOffer, ws) {
   };
 
   try {
-    console.info('sdpOffer:  ');
-    console.info(sdpOffer);
     const kurentoClient = await getKurentoClient();
 
     presenter.pipeline = await kurentoClient.create(MEDIA_PIPELINE);
@@ -82,10 +105,12 @@ async function hostLecture(lectureId, sdpOffer, ws) {
     presenter.webRtcEndpoint.on(ON_ICE_CANDIDATE, event =>
       onIceCandidateFn(event, ws),
     );
+    presenter.webRtcEndpoint.on(CONNECTION_STATE_CHANGED, event => {
+      onMediaStateChanged(event, lectureId);
+      console.info(event);
+    });
 
     const sdpAnswer = await presenter.webRtcEndpoint.processOffer(sdpOffer);
-    console.info('sdpAnswer: ');
-    console.info(sdpAnswer);
     ws.send(
       JSON.stringify({
         id: PRESENTER_RESPONSE,
@@ -99,6 +124,7 @@ async function hostLecture(lectureId, sdpOffer, ws) {
     );
 
     activeLectures[lectureId] = presenter;
+    setLectureActive(lectureId, true);
   } catch (e) {
     console.info(e);
   }
@@ -112,6 +138,7 @@ async function joinLecture(lectureId, sdpOffer, ws) {
   };
   try {
     const presenter = activeLectures[lectureId];
+    console.info(presenter);
     if (!presenter) return;
 
     viewer.webRtcEndpoint = presenter.pipeline.create(WEB_RTC_ENDPOINT);

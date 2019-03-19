@@ -3,6 +3,29 @@ import Lecture from '../data/models/Lecture';
 
 const router = require('express').Router();
 
+router.get('/lectures/active', async (req, res) => {
+  try {
+    const lectures = await Lecture.findAll({ where: { live: true } });
+
+    if (!lectures.length) {
+      res.json({
+        success: false,
+        message: 'No lectures currently active!',
+      });
+      return;
+    }
+
+    res.json({
+      success: true,
+      message: 'Found Lectures',
+      data: lectures,
+    });
+  } catch (e) {
+    console.error(e);
+    res.json({ success: false, message: e.description });
+  }
+});
+
 router.get('/lectures', async (req, res) => {
   try {
     const lectures = await Lecture.findAll();
@@ -21,6 +44,32 @@ router.get('/lectures', async (req, res) => {
     });
   } catch (e) {
     console.error(e);
+    res.json({ success: false, message: e.description });
+  }
+});
+
+router.get('/lecture/*', async (req, res) => {
+  try {
+    const id = req.params[0];
+    const lecture = await Lecture.findOne({ where: { id } });
+    if (!lecture) {
+      res.json({ success: false, message: 'No lecture for that ID' });
+      return;
+    }
+    res.json({
+      success: true,
+      message: '',
+      data: {
+        title: lecture.title,
+        description: lecture.description,
+        startTime: lecture.startTime,
+        lecturerId: lecture.lecturerId,
+        live: lecture.live,
+      },
+    });
+  } catch (e) {
+    console.info(e);
+    res.json({ success: false, message: e });
   }
 });
 

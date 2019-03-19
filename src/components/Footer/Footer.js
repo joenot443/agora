@@ -6,8 +6,8 @@ import Link from '../Link';
 class Footer extends React.Component {
   render() {
     return (
-      <div className={s.root}>
-        <div className={s.container}>
+      <div className={s.footerRoot}>
+        <div className={s.footerContainer}>
           <span className={s.text}>© Your Company</span>
           <span className={s.spacer}>·</span>
           <Link className={s.link} to="/">

@@ -43,7 +43,7 @@ class Members extends Component {
     }
     // Returns a styled member element
     return (
-      <div>
+      <div key={member.id}>
         <div className={s[className]} style={{ color }}>
           {username}
         </div>

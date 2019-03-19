@@ -85,9 +85,6 @@ const schema = [
   ...DatabaseSchema,
 ];
 
-console.info(schema);
-// console.info(resolvers);
-
 export default makeExecutableSchema({
   typeDefs: schema,
   resolvers,

@@ -27,7 +27,7 @@ class Login extends React.Component {
     console.info(this.state);
 
     this.setState({ errors: {}, isLoading: true });
-    const response = await superagent.post('/login').send({
+    const response = await superagent.post('/api/login').send({
       username: this.state.username,
       password: this.state.password,
     });

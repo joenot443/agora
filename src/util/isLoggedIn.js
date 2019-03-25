@@ -1,3 +1,3 @@
 import Cookies from 'js-cookie';
 
-export default () => Cookies.get('token') !== null;
+export default () => !!Cookies.get('token'); 

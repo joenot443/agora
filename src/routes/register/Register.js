@@ -23,7 +23,7 @@ class Register extends React.Component {
   handleSubmit = async e => {
     e.preventDefault();
     console.info(this.state);
-    const response = await superagent.post('/register').send({
+    const response = await superagent.post('/api/register').send({
       username: this.state.username,
       password: this.state.password,
       name: this.state.name,

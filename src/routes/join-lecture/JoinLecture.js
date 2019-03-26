@@ -69,8 +69,9 @@ class JoinLecture extends React.Component {
         remoteVideo: videoInput,
         onicecandidate: this.onIceCandidate,
       };
-
-      this.ws = new WebSocket('wss://localhost:8443/ws');
+      const url = `wss://${document.location.hostname}:8443/ws`;
+      console.info(url);
+      this.ws = new WebSocket(url);
       this.ws.onmessage = this.onWSMessage;
 
       this.webRtcPeer = await kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(
@@ -107,7 +108,9 @@ class JoinLecture extends React.Component {
 
   sendWSMessage = msg => {
     if (!this.ws || this.ws.readyState === this.ws.CLOSED) {
-      this.ws = new WebSocket('wss://localhost:8443/ws');
+      const url = `wss://${document.location.hostname}:8443/ws`;
+      console.info(url);
+      this.ws = new WebSocket(url);
       this.ws.onmessage = this.onWSMessage;
     }
     const jsonMessage = JSON.stringify(msg);

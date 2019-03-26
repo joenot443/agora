@@ -73,7 +73,9 @@ class HostLecture extends React.Component {
         mediaConstraints: constraints,
       };
 
-      this.ws = new WebSocket('wss://localhost:8443/ws');
+      const url = `wss://${document.location.hostname}:8443/ws`;
+      console.info(url);
+      this.ws = new WebSocket(url);
       this.ws.onmessage = this.onWSMessage;
 
       this.webRtcPeer = await kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(

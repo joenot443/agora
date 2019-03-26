@@ -24,34 +24,30 @@ class NewLecture extends React.Component {
   }
 
   submitButtonPressed = async () => {
-    const response = await superagent
-      .post('/api/lectures/new')
-      .send({
-        title: this.state.titleInput,
-        description: this.state.descriptionInput,
-        startTime: combineDateTime(
-          this.state.startDateInput,
-          this.state.startTimeInput,
-        ),
-      });
+    const response = await superagent.post('/api/lectures/new').send({
+      title: this.state.titleInput,
+      description: this.state.descriptionInput,
+      startTime: combineDateTime(
+        this.state.startDateInput,
+        this.state.startTimeInput,
+      ),
+    });
 
-      
-    if (response.body.success){
+    if (response.body.success) {
       const id = response.body.id;
       history.push(`/host-lecture/${id}`);
-    } else if (response.body.message){
+    } else if (response.body.message) {
       this.setState({ message: response.body.message });
     } else {
       this.setState({ message: "Couldn't create Lecture." });
     }
   };
 
-  formFilled = () => (
+  formFilled = () =>
     this.state.titleInput &&
     this.state.descriptionInput &&
     this.state.startDateInput &&
-    this.state.startTimeInput
-  )
+    this.state.startTimeInput;
 
   render() {
     return (
@@ -70,8 +66,10 @@ class NewLecture extends React.Component {
             </div>
             <div className={s.formBlock}>
               <h5 className={s.inputTitle}>Lecture Description</h5>
-              <Input 
-                onChange={e => this.setState({ descriptionInput: e.target.value })}
+              <Input
+                onChange={e =>
+                  this.setState({ descriptionInput: e.target.value })
+                }
                 placeholder="What's your Lecture all about?"
               />
             </div>

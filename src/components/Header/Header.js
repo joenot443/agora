@@ -31,17 +31,12 @@ class Header extends React.Component {
       </span>
     );
 
-
-
-
-
-
     return (
       <div className={s.root}>
         <div className={s.container}>
-        <div className={s.nav} role="navigation">
-          {isLoggedIn() ? profileLink : loginRegisterLinks}
-        </div>
+          <div className={s.nav} role="navigation">
+            {isLoggedIn() ? profileLink : loginRegisterLinks}
+          </div>
           <Link className={s.brand} to="/">
             <span className={s.brandTxt}>Agora</span>
           </Link>

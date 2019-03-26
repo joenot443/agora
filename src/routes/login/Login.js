@@ -14,7 +14,6 @@ class Login extends React.Component {
 
   constructor(props) {
     super(props);
-    console.info(props);
     this.state = {
       message: null,
       username: '',

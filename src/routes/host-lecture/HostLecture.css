@@ -4,3 +4,7 @@
 .root {
   display: auto;
 }
+
+.content {
+  border:1px solid red;
+}

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import superagent from 'superagent';
-import { Button, Input, DatePicker } from 'antd';
+import { Button, Input, DatePicker, TimePicker } from 'antd';
 import s from './NewLecture.css';
 import combineDateTime from '../../util/combineDateTime';
 import history from '../../history';
@@ -17,36 +17,43 @@ class NewLecture extends React.Component {
     this.state = {
       titleInput: '',
       descriptionInput: '',
-      startDateInput: '',
-      startTimeInput: '',
+      startDateInput: null,
+      startTimeInput: null,
       message: null,
     };
   }
 
   submitButtonPressed = async () => {
-    const response = await superagent.post('/lectures/new').send({
-      title: this.state.titleInput,
-      description: this.state.descriptionInput,
-      startTime: combineDateTime(
-        this.state.startDateInput,
-        this.state.startTimeInput,
-      ),
-    });
-    console.info(response);
-    if (response.body.success) history.push('/');
-    else if (response.body.message)
+    const response = await superagent
+      .post('/api/lectures/new')
+      .send({
+        title: this.state.titleInput,
+        description: this.state.descriptionInput,
+        startTime: combineDateTime(
+          this.state.startDateInput,
+          this.state.startTimeInput,
+        ),
+      });
+
+      
+    if (response.body.success){
+      const id = response.body.id;
+      history.push(`/host-lecture/${id}`);
+    } else if (response.body.message){
       this.setState({ message: response.body.message });
-    else this.setState({ message: "Couldn't create Lecture." });
+    } else {
+      this.setState({ message: "Couldn't create Lecture." });
+    }
   };
 
-  formFilled = () =>
+  formFilled = () => (
     this.state.titleInput &&
     this.state.descriptionInput &&
     this.state.startDateInput &&
-    this.state.startTimeInput;
+    this.state.startTimeInput
+  )
 
   render() {
-    console.info(this.state);
     return (
       <div className={s.root}>
         <div className={s.container}>
@@ -63,10 +70,8 @@ class NewLecture extends React.Component {
             </div>
             <div className={s.formBlock}>
               <h5 className={s.inputTitle}>Lecture Description</h5>
-              <Input
-                onChange={e =>
-                  this.setState({ descriptionInput: e.target.value })
-                }
+              <Input 
+                onChange={e => this.setState({ descriptionInput: e.target.value })}
                 placeholder="What's your Lecture all about?"
               />
             </div>
@@ -78,7 +83,7 @@ class NewLecture extends React.Component {
             </div>
             <div className={`${s.formBlock} ${s.formBlockHalf}`}>
               <h5 className={s.inputTitle}>Start Time</h5>
-              <DatePicker
+              <TimePicker
                 onChange={v => this.setState({ startTimeInput: v })}
               />
             </div>

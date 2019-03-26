@@ -56,6 +56,7 @@ router.get('/lecture/*', async (req, res) => {
       res.json({ success: false, message: 'No lecture for that ID' });
       return;
     }
+
     res.json({
       success: true,
       message: '',
@@ -75,7 +76,6 @@ router.get('/lecture/*', async (req, res) => {
 
 router.post('/lectures/new', async (req, res) => {
   try {
-    console.info(req);
     const lecture = await Lecture.create({
       title: req.body.title,
       description: req.body.description,
@@ -85,7 +85,7 @@ router.post('/lectures/new', async (req, res) => {
     res.json({
       success: true,
       message: 'Successfully created a lecture',
-      data: lecture,
+      id: lecture.dataValues.id,
     });
   } catch (e) {
     console.error(e);

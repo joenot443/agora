@@ -72,6 +72,11 @@
   margin: 0 10px -10px;
 }
 
+.Paper {
+  maxWidth: 400;
+  overflow: 'auto';
+}
+
 .Message-content > .username {
   display: block;
   color: gray;

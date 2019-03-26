@@ -39,6 +39,8 @@ class Html extends React.Component {
             <link key={script} rel="preload" href={script} as="script" />
           ))}
           <script src="https://cdn.scaledrone.com/scaledrone.min.js" />
+          <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
+          <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></link>
           <link rel="manifest" href="/site.webmanifest" />
           <link rel="apple-touch-icon" href="/icon.png" />
           {styles.map(style => (

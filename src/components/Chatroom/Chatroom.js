@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import Messages from '../ChatMessages/ChatMessages';
 import Members from '../ChatMembers/ChatMembers';
@@ -26,6 +28,8 @@ class Chatroom extends Component {
     this.state = {
       members: [],
       messages: [],
+      muted: [],
+      handRaised: [],
       member: {
         username: props.username,
         color: randomColor(),
@@ -79,7 +83,7 @@ class Chatroom extends Component {
       // Called upon data being published to the room -- updates messages list
       room.on('data', (data, member) => {
         const messages = this.state.messages;
-        messages.push({ member, text: data });
+        messages.push({ member, text: data.msg });
         this.setState({ messages });
       });
     });
@@ -88,25 +92,71 @@ class Chatroom extends Component {
   render() {
     return (
       <div className={s.root}>
+        <ToastContainer
+          newestOnTop
+          autoClose={5000}
+          pauseOnVisibilityChange
+          draggable
+          pauseOnHover
+        />
         <Members
           membersCount={this.state.members.length}
           members={this.state.members}
           currentMember={this.state.member}
+          hands={this.state.handRaised}
         />
         <Messages
           messages={this.state.messages}
           currentMember={this.state.member}
+          onMemberMuted={this.onMemberMuted}
+          mutedList={this.state.muted}
         />
-        <Input onSendMessage={this.onSendMessage} />
+        <Input
+          onSendMessage={this.onSendMessage}
+          username={this.state.member.username}
+          onHandRaise={this.onHandRaise}
+        />
+        />
       </div>
     );
   }
   // What happens upon pressing 'send'
   // This gets passed as a prop to the Input component
-  onSendMessage = message => {
-    this.drone.publish({
-      room: 'observable-room',
-      message,
+  onSendMessage = (message, username) => {
+    if (!this.state.muted.includes(username)) {
+      this.drone.publish({
+        room: 'observable-room',
+        message: { msg: message },
+      });
+    }
+  };
+
+  onHandRaise = username => {
+    if (this.state.handRaised.includes(username)) {
+      console.log('true');
+      console.log(this.state.handRaised);
+      const index = this.state.handRaised.indexOf(username);
+      const arr = [...this.state.handRaised];
+      arr.splice(index, 1);
+      this.setState({
+        handRaised: arr,
+      });
+    } else {
+      this.setState({
+        handRaised: [...this.state.handRaised, username],
+      });
+      toast.info(`${username} has raised their hand`, {
+        position: 'top-left',
+        autoClose: true,
+        closeOnClick: true,
+        draggable: true,
+      });
+    }
+  };
+
+  onMemberMuted = username => {
+    this.setState({
+      muted: [...this.state.muted, username],
     });
   };
 }

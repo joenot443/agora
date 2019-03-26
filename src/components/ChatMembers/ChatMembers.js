@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import Icon from '@material-ui/core/Icon';
+import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from '../Chatroom/Chatroom.css';
 
@@ -25,8 +27,9 @@ class Members extends Component {
     // Defaults incase member object is never defined
     let username = 'UnknownAccount';
     let color = 'blue';
+    let handUp = false;
 
-    const { currentMember } = this.props;
+    const { currentMember, hands } = this.props;
     const messageFromMe = member.id === currentMember.id;
     // Class depends on whether the current user is the member object being passed
     const className = messageFromMe ? 'self' : 'username';
@@ -34,14 +37,30 @@ class Members extends Component {
     // Note -- need to sort out why it comes as member.member.clientData sometimes
     if (member.clientData !== undefined) {
       username = member.clientData.username;
+      if (hands.includes(username)) {
+        handUp = true;
+      }
       color = member.clientData.color;
     } else if (member.member.clientData !== undefined) {
       username = member.member.clientData.username;
+      if (hands.includes(username)) {
+        handUp = true;
+      }
       color = member.member.clientData.color;
     } else {
       this.forceUpdate();
     }
     // Returns a styled member element
+    if (handUp) {
+      return (
+        <div key={member.id}>
+          <div className={s[className]} style={{ color }}>
+            {username}
+            <Icon style={{ marginLeft: 4, fontSize: 14 }}>pan_tool</Icon>
+          </div>
+        </div>
+      );
+    }
     return (
       <div key={member.id}>
         <div className={s[className]} style={{ color }}>

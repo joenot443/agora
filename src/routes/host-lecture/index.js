@@ -11,7 +11,7 @@ function action(context) {
     chunks: ['host-lecture'],
     component: (
       <Layout>
-        {canUseDOM ? <HostLecture lectureId={lectureId} /> : 'No SSR'}
+        <HostLecture lectureId={lectureId} />
       </Layout>
     ),
   };

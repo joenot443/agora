@@ -13,11 +13,7 @@ function action(context) {
     title,
     component: (
       <Layout>
-        {canUseDOM ? (
-          <JoinLecture title={title} lectureId={lectureId} />
-        ) : (
-          'ssr'
-        )}
+        <JoinLecture title={title} lectureId={lectureId} />
       </Layout>
     ),
   };

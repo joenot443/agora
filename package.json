@@ -64,6 +64,7 @@
     "redux-devtools-extension": "^2.13.2",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.2.0",
+    "scaledrone-node-push": "^2.2.0",
     "sequelize": "^4.37.10",
     "serialize-javascript": "^1.5.0",
     "source-map-support": "^0.5.6",
@@ -167,7 +168,7 @@
     ],
     "linters": {
       "*.{js,jsx}": [
-        "eslint --no-ignore --fix",
+        "eslint --fix",
         "git add --force"
       ],
       "*.{json,md,graphql}": [

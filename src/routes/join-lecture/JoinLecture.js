@@ -30,9 +30,11 @@ class JoinLecture extends React.Component {
     this.viewerId = null;
     this.state = {
       message: null,
-      lecture: null,
+      lecture: {},
       loading: true,
+      live: false,
     };
+    this.messageStack = [];
   }
 
   async componentDidMount() {
@@ -85,7 +87,27 @@ class JoinLecture extends React.Component {
       console.info(e);
     }
   };
+
   // Websockets
+
+  initializeWS = () => {
+    const url = `wss://${document.location.hostname}:8443/ws`;
+    this.ws = new WebSocket(url);
+    this.ws.onmessage = this.onWSMessage;
+    this.ws.onopen = this.onWSOpen;
+  };
+
+  sendMessageStack = () => {
+    this.messageStack.forEach(m => {
+      console.info(`Sending message  : ${jsonMessage}`);
+      this.ws.send(m);
+    });
+    this.messageStack = [];
+  };
+
+  onWSOpen = () => {
+    if (this.messageStack.length) this.sendMessageStack();
+  };
 
   onWSMessage = msg => {
     const parsed = JSON.parse(msg.data);
@@ -108,14 +130,13 @@ class JoinLecture extends React.Component {
 
   sendWSMessage = msg => {
     if (!this.ws || this.ws.readyState === this.ws.CLOSED) {
-      const url = `wss://${document.location.hostname}:8443/ws`;
-      console.info(url);
-      this.ws = new WebSocket(url);
-      this.ws.onmessage = this.onWSMessage;
+      this.initializeWS();
+      this.messageStack.push(JSON.stringify(msg));
+    } else {
+      const jsonMessage = JSON.stringify(msg);
+      console.info(`Sending message  : ${jsonMessage}`);
+      this.ws.send(jsonMessage);
     }
-    const jsonMessage = JSON.stringify(msg);
-    console.info(`Sending message  : ${jsonMessage}`);
-    this.ws.send(jsonMessage);
   };
 
   // Kurento
@@ -158,24 +179,24 @@ class JoinLecture extends React.Component {
   };
 
   render() {
-    let body;
-    if (this.state.loading) body = <Loading />;
-    else if (this.state.success === false)
-      body = <Error message={this.state.message} />;
-    else
-      body = (
-        <div>
-          <h1>{this.state.lecture.title}</h1>
-          <h4>{this.state.lecture.description}</h4>
-          <div className={s.content}>
-            <video id="video" autoPlay width="640px" height="480px" controls />
-            <Chatroom />
-          </div>
-        </div>
-      );
     return (
       <div className={s.root}>
-        <div className={s.container}>{body}</div>
+        <div className={s.container}>
+          <div>
+            <h1>{this.state.lecture.title}</h1>
+            <h4>{this.state.lecture.description}</h4>
+            <div className={s.content}>
+              <video
+                id="video"
+                autoPlay
+                width="640px"
+                height="480px"
+                controls
+              />
+              <Chatroom />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

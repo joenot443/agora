@@ -7,6 +7,7 @@ import normalizeCss from 'normalize.css';
 import s from './Layout.scss';
 import Header from '../Header';
 import Footer from '../Footer';
+import Sidebar from '../Sidebar/Sidebar';
 
 class Layout extends React.Component {
   static propTypes = {
@@ -17,7 +18,10 @@ class Layout extends React.Component {
     return (
       <div>
         <Header />
-        <div className={s.layout}>{this.props.children}</div>
+        <div className={s.layout}>
+          <Sidebar />
+          {this.props.children}
+        </div>
       </div>
     );
   }

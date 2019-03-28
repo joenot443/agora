@@ -1,7 +1,7 @@
 .root {
   display: auto;
   height: 480px;
-  overflow: scroll;
+  overflow: auto;
 }
 
 .App {

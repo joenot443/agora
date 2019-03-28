@@ -192,6 +192,7 @@ app.get('*', async (req, res, next) => {
     data.styles = [{ id: 'css', cssText: [...css].join('') }];
 
     const scripts = new Set();
+    scripts.add('https://cdn.scaledrone.com/scaledrone.min.js');
     const addChunk = chunk => {
       if (chunks[chunk]) {
         chunks[chunk].forEach(asset => scripts.add(asset));

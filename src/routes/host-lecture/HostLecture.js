@@ -158,6 +158,14 @@ class HostLecture extends React.Component {
 
   render() {
     let body;
+    const videoBody = this.state.hosting ? (
+      <video id="video" autoPlay width="640px" height="480px" />
+    ) : (
+      <div>
+        You're not currently broadcasting. Press the button below to start
+        hosting your lecture!
+      </div>
+    );
     if (this.state.loading) body = <Loading />;
     else if (this.state.success === false)
       body = <Error message={this.state.message} />;
@@ -167,7 +175,8 @@ class HostLecture extends React.Component {
           <h1>{this.state.lecture.title}</h1>
           <h4>{this.state.lecture.description}</h4>
           <div className={s.content}>
-            <video id="video" autoPlay width="640px" height="480px" />
+            <div className={s.videoBody}>{videoBody}</div>
+
             <Chatroom username="Lecturer" />
           </div>
           <div className={s.menu}>

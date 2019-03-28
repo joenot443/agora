@@ -214,6 +214,7 @@ async function start() {
           cert: '/etc/agora/localhost.crt',
         },
         middleware: [server],
+        ghostMode: false,
         open: !process.argv.includes('--silent'),
         ...(isDebug ? {} : { notify: false, ui: false }),
       },

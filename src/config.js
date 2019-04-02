@@ -8,7 +8,7 @@ if (process.env.BROWSER) {
 
 module.exports = {
   // Node.js app
-  port: process.env.PORT || 3000,
+  port: process.env.PORT || 3069,
 
   // https://expressjs.com/en/guide/behind-proxies.html
   trustProxy: process.env.TRUST_PROXY || 'loopback',
@@ -20,11 +20,12 @@ module.exports = {
     // API URL to be used in the server-side code
     serverUrl:
       process.env.API_SERVER_URL ||
-      `http://localhost:${process.env.PORT || 3000}`,
+      `http://localhost:${process.env.PORT || 3069}`,
   },
 
   // Database
-  databaseUrl: process.env.DATABASE_URL || 'mysql://root:root@127.0.0.1:3306/agora',
+  databaseUrl:
+    process.env.DATABASE_URL || 'mysql://root:root@127.0.0.1:3306/agora',
 
   // Kurento
   kurentoUrl: process.env.KURENTO_URL || 'ws://52.23.218.141:8888/kurento',

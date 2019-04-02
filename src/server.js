@@ -33,6 +33,7 @@ import { setRuntimeVariable } from './actions/runtime';
 import config from './config';
 import apiRouter from './api';
 import setUpWSS from './live/wss';
+import { clearLectures } from './api/util';
 
 process.on('unhandledRejection', (reason, p) => {
   console.error('Unhandled Rejection at:', p, 'reason:', reason);
@@ -249,6 +250,8 @@ app.use((err, req, res, next) => {
 
 // Set up WSS
 setUpWSS();
+
+clearLectures();
 
 //
 // Launch the server

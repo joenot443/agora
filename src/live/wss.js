@@ -7,6 +7,7 @@ import {
   PRESENTER_REQUEST,
   VIEWER_REQUEST,
   ICE_CANDIDATE,
+  STOP_LECTURE,
 } from '../constants/ws';
 
 // Set up WSS
@@ -26,10 +27,9 @@ const setUpWSS = () => {
   wss = new ws.Server({ server: httpsServer });
 
   wss.on('connection', conn => {
+    conn.alive = true;
     conn.on('message', msg => {
       const parsed = JSON.parse(msg);
-      console.info(parsed);
-      console.info(parsed.lectureId);
       switch (parsed.id) {
         case PRESENTER_REQUEST:
           kurento.hostLecture(parsed.lectureId, parsed.sdpOffer, conn);
@@ -40,10 +40,29 @@ const setUpWSS = () => {
         case ICE_CANDIDATE:
           kurento.handleIceCandidate(parsed);
           break;
+        case STOP_LECTURE:
+          kurento.stopLecture(parsed.lectureId);
+          break;
         default:
           break;
       }
     });
+
+    conn.on('pong', () => {
+      conn.alive = true;
+    });
   });
 };
+
+setInterval(() => {
+  wss.clients.forEach(ws => {
+    if (ws.alive === false) {
+      return ws.terminate();
+    }
+
+    ws.alive = false;
+    ws.ping(() => {});
+  });
+}, 5000);
+
 export default setUpWSS;

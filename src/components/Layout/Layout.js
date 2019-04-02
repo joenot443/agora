@@ -16,11 +16,11 @@ class Layout extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className={s.app}>
         <Header />
         <div className={s.layout}>
           <Sidebar />
-          {this.props.children}
+          <div className={s.body}>{this.props.children}</div>
         </div>
       </div>
     );

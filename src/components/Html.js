@@ -40,6 +40,8 @@ class Html extends React.Component {
           ))}
           <link rel="manifest" href="/site.webmanifest" />
           <script src="https://cdn.scaledrone.com/scaledrone.min.js" />
+          <script src="https://cdn.WebRTC-Experiment.com/getScreenId.js" />
+          <script src="https://webrtc.github.io/adapter/adapter-latest.js" />
           <link rel="apple-touch-icon" href="/icon.png" />
           {styles.map(style => (
             <style

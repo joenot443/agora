@@ -8,3 +8,7 @@ export const VIEWER_REQUEST = 'viewerRequest';
 
 export const PRESENTER_TYPE = 'presenter';
 export const VIEWER_TYPE = 'viewer';
+
+export const END_LECTURE = 'endLecture';
+
+export const RECONNECT_LECTURE = 'reconnectLecture';

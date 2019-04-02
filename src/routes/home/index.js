@@ -3,17 +3,13 @@ import Home from './Home';
 import lecturesQuery from './news.graphql';
 import Layout from '../../components/Layout';
 
-async function action({ client }) {
-  const data = await client.query({
-    query: lecturesQuery,
-  });
-
+async function action() {
   return {
-    title: 'React Starter Kit',
+    title: 'Agora - Home',
     chunks: ['home'],
     component: (
       <Layout>
-        <Home news={data.reactjsGetAllNews} />
+        <Home />
       </Layout>
     ),
   };

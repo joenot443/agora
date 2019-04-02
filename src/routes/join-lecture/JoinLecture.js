@@ -15,6 +15,8 @@ import {
   PRESENTER_REQUEST,
   VIEWER_REQUEST,
   VIEWER_TYPE,
+  END_LECTURE,
+  RECONNECT_LECTURE,
 } from '../../constants/ws';
 
 console.info('Should NEVER SEEN THIS ON SERVER');
@@ -60,6 +62,7 @@ class JoinLecture extends React.Component {
       success: true,
       loading: false,
     });
+    this.initializeWS();
     this.startViewer();
   };
 
@@ -71,10 +74,6 @@ class JoinLecture extends React.Component {
         remoteVideo: videoInput,
         onicecandidate: this.onIceCandidate,
       };
-      const url = `wss://${document.location.hostname}:8443/ws`;
-      console.info(url);
-      this.ws = new WebSocket(url);
-      this.ws.onmessage = this.onWSMessage;
 
       this.webRtcPeer = await kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(
         options,
@@ -99,25 +98,31 @@ class JoinLecture extends React.Component {
 
   sendMessageStack = () => {
     this.messageStack.forEach(m => {
-      console.info(`Sending message  : ${jsonMessage}`);
-      this.ws.send(m);
+      console.info(`Sending message  : ${m}`);
+      this.ws.send(JSON.stringify(m));
     });
     this.messageStack = [];
   };
 
   onWSOpen = () => {
+    // this.heartbeat();
     if (this.messageStack.length) this.sendMessageStack();
   };
 
   onWSMessage = msg => {
     const parsed = JSON.parse(msg.data);
-    console.info(parsed);
     switch (parsed.id) {
       case VIEWER_RESPONSE:
         this.onViewerResponse(parsed);
         break;
       case ICE_CANDIDATE:
         this.onWSIceCandidate(parsed);
+        break;
+      case END_LECTURE:
+        this.onLectureEnd();
+        break;
+      case RECONNECT_LECTURE:
+        this.startViewer();
         break;
       default:
         break;
@@ -131,7 +136,9 @@ class JoinLecture extends React.Component {
   sendWSMessage = msg => {
     if (!this.ws || this.ws.readyState === this.ws.CLOSED) {
       this.initializeWS();
-      this.messageStack.push(JSON.stringify(msg));
+      this.messageStack.push(msg);
+    } else if (this.ws.readyState === this.ws.CONNECTING) {
+      this.messageStack.push(msg);
     } else {
       const jsonMessage = JSON.stringify(msg);
       console.info(`Sending message  : ${jsonMessage}`);
@@ -139,15 +146,27 @@ class JoinLecture extends React.Component {
     }
   };
 
+  // heartbeat = () => {
+  //   clearTimeout(this.pingTimeout);
+  //   this.pingTimeout = setTimeout(() => {
+  //     this.ws.terminate();
+  //   }, 6000);
+  // };
+
   // Kurento
 
   onViewerResponse = message => {
-    console.info(message);
     this.viewerId = message.viewerId;
+    console.info('Viewer response');
     console.info(message);
     if (message.message) {
       this.webRtcPeer.processAnswer(message.message, error => {
         if (error) console.info(error);
+        else {
+          this.setState({ live: true });
+          const video = document.getElementById('video');
+          video.play();
+        }
       });
     }
   };
@@ -178,6 +197,13 @@ class JoinLecture extends React.Component {
     this.sendWSMessage(message);
   };
 
+  onLectureEnd = (error, stream) => {
+    console.info(error);
+    console.info(stream);
+    console.info('isdhfgousd');
+    this.setState({ live: false });
+  };
+
   render() {
     return (
       <div className={s.root}>
@@ -186,13 +212,17 @@ class JoinLecture extends React.Component {
             <h1>{this.state.lecture.title}</h1>
             <h4>{this.state.lecture.description}</h4>
             <div className={s.content}>
-              <video
-                id="video"
-                autoPlay
-                width="640px"
-                height="480px"
-                controls
-              />
+              <div className={s.videoBody}>
+                <video
+                  id="video"
+                  className={s.video}
+                  hidden={!this.state.live}
+                  controls
+                />
+                <div className={s.notPlaying} hidden={this.state.live}>
+                  This lecture is not currently live!
+                </div>
+              </div>
               <Chatroom />
             </div>
           </div>

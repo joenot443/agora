@@ -86,6 +86,8 @@ module.exports = {
 
     'react/sort-comp': 'off',
 
+    'jsx-a11y/media-has-caption': 'off',
+
     // ESLint plugin for prettier formatting
     // https://github.com/prettier/eslint-plugin-prettier
     'prettier/prettier': 'error',

@@ -179,7 +179,18 @@ textarea {
   }
 }
 
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
 .layout {
   display: flex;
   padding-top: 20px;
+  flex-grow: 1;
+}
+
+.body {
+  flex-grow: 1;
 }

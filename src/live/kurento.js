@@ -8,6 +8,8 @@ import {
   VIEWER_RESPONSE,
   VIEWER_TYPE,
   PRESENTER_TYPE,
+  END_LECTURE,
+  RECONNECT_LECTURE,
 } from '../constants/ws';
 
 const MEDIA_PIPELINE = 'MediaPipeline';
@@ -16,12 +18,18 @@ const ON_ICE_CANDIDATE = 'OnIceCandidate';
 const ICE_CANDIDATE_TYPE = 'IceCandidate';
 const ICE_CANDIDATE_EVENT = 'iceCandidate';
 const CONNECTION_STATE_CHANGED = 'MediaStateChanged';
+const END_OF_STREAM = 'EndOfStream';
 
-const CONNECTED = 'DISCONNECTED';
+const CONNECTED = 'CONNECTED';
 const DISCONNECTED = 'DISCONNECTED';
 
 const activeLectures = {};
 const activeViewers = {};
+/* {
+  lectureId: [ViewerSocket]
+}
+*/
+const waitingViewerSockets = {};
 
 let kurentoSingleton;
 
@@ -31,6 +39,37 @@ async function getKurentoClient() {
   kurentoSingleton = await kurento.getSingleton(config.kurentoUrl);
 
   return kurentoSingleton;
+}
+
+function sendWSMessage(ws, msg) {
+  if (!ws.readyState === ws.OPEN) {
+    console.info('Closing socket');
+  } else {
+    ws.send(JSON.stringify(msg));
+  }
+}
+
+function appendWaitingViewerSocket(ws, lectureId) {
+  console.info(`Appending waiting viewer for ${lectureId}`);
+  if (!waitingViewerSockets[lectureId]) {
+    waitingViewerSockets[lectureId] = [ws];
+  } else {
+    waitingViewerSockets[lectureId].push(ws);
+  }
+}
+
+function alertWaitingViewers(lectureId) {
+  console.info('Alerting viewers: ');
+  console.info(waitingViewerSockets);
+  if (!waitingViewerSockets[lectureId]) return;
+
+  waitingViewerSockets[lectureId].forEach(ws => {
+    console.info(`Alerting waiting viewer for ${lectureId}`);
+    sendWSMessage(ws, {
+      id: RECONNECT_LECTURE,
+    });
+  });
+  waitingViewerSockets[lectureId] = [];
 }
 
 async function wsIceCandidate(event, ws) {
@@ -43,7 +82,6 @@ async function wsIceCandidate(event, ws) {
   );
 }
 async function onLecturerIceCandidate(lectureId, _candidate) {
-  console.info(activeLectures);
   const lecturer = activeLectures[lectureId];
   if (!lecturer) return;
   const candidate = kurento.getComplexType(ICE_CANDIDATE_TYPE)(_candidate);
@@ -51,11 +89,17 @@ async function onLecturerIceCandidate(lectureId, _candidate) {
 }
 
 async function onViewerIceCandidate(viewerId, _candidate) {
-  console.info(activeViewers);
   const viewer = activeViewers[viewerId];
   if (!viewer) return;
   const candidate = kurento.getComplexType(ICE_CANDIDATE_TYPE)(_candidate);
   viewer.webRtcEndpoint.addIceCandidate(candidate);
+}
+
+async function onLectureEnd(ws, lectureId) {
+  sendWSMessage(ws, {
+    id: END_LECTURE,
+  });
+  appendWaitingViewerSocket(ws, lectureId);
 }
 
 async function handleIceCandidate(message) {
@@ -72,7 +116,7 @@ async function handleIceCandidate(message) {
 
 async function setLectureActive(lectureId, active) {
   const lecture = await Lecture.findOne({
-    where: { id: Number.parseInt(lectureId) },
+    where: { id: Number.parseInt(lectureId, 10) },
   });
   if (!lecture) {
     console.info(`No lecture for id ${lectureId}`);
@@ -94,9 +138,11 @@ async function hostLecture(lectureId, sdpOffer, ws) {
     lectureId,
     pipeline: null,
     webRtcEndpoint: null,
+    viewers: [],
   };
 
   try {
+    console.info(`Starting lecture ${lectureId}`);
     const kurentoClient = await getKurentoClient();
 
     presenter.pipeline = await kurentoClient.create(MEDIA_PIPELINE);
@@ -107,7 +153,6 @@ async function hostLecture(lectureId, sdpOffer, ws) {
     );
     presenter.webRtcEndpoint.on(CONNECTION_STATE_CHANGED, event => {
       onMediaStateChanged(event, lectureId);
-      console.info(event);
     });
 
     const sdpAnswer = await presenter.webRtcEndpoint.processOffer(sdpOffer);
@@ -120,10 +165,11 @@ async function hostLecture(lectureId, sdpOffer, ws) {
     );
 
     await presenter.webRtcEndpoint.gatherCandidates(error =>
-      console.info(error),
+      console.info(`Error ${error}`),
     );
 
     activeLectures[lectureId] = presenter;
+    alertWaitingViewers(lectureId);
     setLectureActive(lectureId, true);
   } catch (e) {
     console.info(e);
@@ -135,12 +181,15 @@ async function joinLecture(lectureId, sdpOffer, ws) {
     lectureId,
     pipeline: null,
     webRtcEndpoint: null,
+    ws,
   };
   try {
     const presenter = activeLectures[lectureId];
-    console.info(presenter);
-    if (!presenter) return;
-
+    if (!presenter) {
+      console.info(`No active presenter for ${lectureId}`);
+      appendWaitingViewerSocket(lectureId, ws);
+      return;
+    }
     viewer.webRtcEndpoint = presenter.pipeline.create(WEB_RTC_ENDPOINT);
     const onIceCandidateFn = wsIceCandidate;
     viewer.webRtcEndpoint.on(ON_ICE_CANDIDATE, event =>
@@ -150,9 +199,6 @@ async function joinLecture(lectureId, sdpOffer, ws) {
     const sdpAnswer = await viewer.webRtcEndpoint.processOffer(sdpOffer);
 
     presenter.webRtcEndpoint.connect(viewer.webRtcEndpoint);
-
-    console.info('Presenter sdpAnswer: ');
-    console.info(sdpAnswer);
     const viewerId = uuid();
 
     ws.send(
@@ -165,6 +211,7 @@ async function joinLecture(lectureId, sdpOffer, ws) {
     );
 
     activeViewers[viewerId] = viewer;
+    presenter.viewers.push(viewer);
 
     viewer.webRtcEndpoint.gatherCandidates();
   } catch (e) {
@@ -172,4 +219,16 @@ async function joinLecture(lectureId, sdpOffer, ws) {
   }
 }
 
-export default { hostLecture, joinLecture, handleIceCandidate };
+async function stopLecture(lectureId) {
+  console.info(`Stopping lecture ${lectureId}`);
+  const presenter = activeLectures[lectureId];
+  if (!presenter) return;
+  presenter.pipeline.release();
+  presenter.viewers.forEach(v => {
+    v.webRtcEndpoint.release();
+    onLectureEnd(v.ws, lectureId);
+  });
+  delete activeLectures[lectureId];
+}
+
+export default { hostLecture, joinLecture, handleIceCandidate, stopLecture };

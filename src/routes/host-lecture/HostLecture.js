@@ -5,7 +5,7 @@ import superagent from 'superagent';
 import kurentoUtils from 'kurento-utils';
 import Error from '../../components/Error/Error';
 import Loading from '../../components/Loading/Loading';
-import { Button } from 'antd';
+import { Button, Radio } from 'antd';
 import s from './HostLecture.css';
 import Chatroom from '../../components/Chatroom/Chatroom';
 import {
@@ -29,12 +29,15 @@ class HostLecture extends React.Component {
       lecture: null,
       loading: true,
       hosting: false,
+      shareType: 'webcam',
     };
+    this.messageStack = [];
   }
 
   async componentDidMount() {
     if (typeof window === 'undefined') return;
     this.fetchLecture();
+    this.initializeWS();
   }
 
   async fetchLecture() {
@@ -59,38 +62,77 @@ class HostLecture extends React.Component {
     try {
       const videoInput = document.getElementById('video');
 
-      const constraints = {
-        audio: true,
-        video: {
-          width: 640,
-          framerate: 15,
-        },
-      };
-
       const options = {
         localVideo: videoInput,
         onicecandidate: this.onIceCandidate,
-        mediaConstraints: constraints,
+
+        sendSource: this.state.shareType,
+        mediaConstraints: {
+          audio: true,
+          video: {
+            mandatory: {
+              maxWidth: 320,
+              maxHeight: 240,
+              maxFrameRate: 15,
+              minFrameRate: 15,
+            },
+          },
+        },
       };
 
-      const url = `wss://${document.location.hostname}:8443/ws`;
-      console.info(url);
-      this.ws = new WebSocket(url);
-      this.ws.onmessage = this.onWSMessage;
+      console.info(options);
 
       this.webRtcPeer = await kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(
         options,
-        error => {
-          if (error) console.info(error);
+        (error, a) => {
+          console.info(error);
+          console.info(a);
+          // if (error) console.info(error);
           this.webRtcPeer.generateOffer(this.onPresenterOffer);
         },
       );
+      this.setState({ hosting: true });
+    } catch (e) {
+      console.info(e);
+    }
+  };
+
+  stopHost = async () => {
+    try {
+      this.sendWSMessage({
+        id: STOP_LECTURE,
+        lectureId: this.props.lectureId,
+      });
+      this.setState({
+        hosting: false,
+      });
     } catch (e) {
       console.info(e);
     }
   };
 
   // Websockets
+
+  initializeWS = () => {
+    const url = `wss://${document.location.hostname}:8443/ws`;
+    this.ws = new WebSocket(url);
+    this.ws.onmessage = this.onWSMessage;
+    this.ws.onopen = this.onWSOpen;
+    // this.ws.on('ping', this.heartbeat);
+  };
+
+  sendMessageStack = () => {
+    this.messageStack.forEach(m => {
+      console.info(`Sending message  : ${m}`);
+      this.ws.send(m);
+    });
+    this.messageStack = [];
+  };
+
+  onWSOpen = () => {
+    // this.heartbeat();
+    if (this.messageStack.length) this.sendMessageStack();
+  };
 
   onWSMessage = msg => {
     console.info(msg);
@@ -107,6 +149,24 @@ class HostLecture extends React.Component {
         break;
     }
   };
+
+  sendWSMessage = msg => {
+    if (!this.ws || this.ws.readyState === this.ws.CLOSED) {
+      this.initializeWS();
+      this.messageStack.push(JSON.stringify(msg));
+    } else {
+      const jsonMessage = JSON.stringify(msg);
+      console.info(`Sending message  : ${jsonMessage}`);
+      this.ws.send(jsonMessage);
+    }
+  };
+
+  // heartbeat = () => {
+  //   clearTimeout(this.pingTimeout);
+  //   this.pingTimeout = setTimeout(() => {
+  //     this.ws.terminate();
+  //   }, 6000);
+  // };
 
   onWSIceCandidate = msg => {
     this.webRtcPeer.addIceCandidate(msg.candidate);
@@ -146,6 +206,7 @@ class HostLecture extends React.Component {
   };
 
   onPresenterOffer = (error, offer) => {
+    console.info('Got presenter offer');
     if (error) return this.onError(error);
 
     const message = {
@@ -158,34 +219,64 @@ class HostLecture extends React.Component {
 
   render() {
     let body;
-    const videoBody = this.state.hosting ? (
-      <video id="video" autoPlay width="640px" height="480px" />
-    ) : (
-      <div>
-        You're not currently broadcasting. Press the button below to start
-        hosting your lecture!
-      </div>
-    );
     if (this.state.loading) body = <Loading />;
     else if (this.state.success === false)
       body = <Error message={this.state.message} />;
-    else
+    else {
+      const hostingButtonTitle = this.state.hosting
+        ? 'Stop Hosting'
+        : 'Start Hosting';
+      const hostingButtonAction = this.state.hosting
+        ? this.stopHost
+        : this.startHost;
       body = (
         <div>
           <h1>{this.state.lecture.title}</h1>
           <h4>{this.state.lecture.description}</h4>
           <div className={s.content}>
-            <div className={s.videoBody}>{videoBody}</div>
-
+            <div className={s.videoBody}>
+              <div>
+                <video
+                  id="video"
+                  className={s.video}
+                  autoPlay
+                  hidden={!this.state.hosting}
+                />
+                <div className={s.notPlaying} hidden={this.state.hosting}>
+                  You're not currently broadcasting. <br />
+                  Press the button below to start hosting your lecture!
+                </div>
+                <div className={s.menu}>
+                  <Button
+                    type="primary"
+                    size="large"
+                    onClick={hostingButtonAction}
+                  >
+                    {hostingButtonTitle}
+                  </Button>
+                  <div>
+                    <Radio.Group
+                      defaultValue="webcam"
+                      value={this.state.shareType}
+                      buttonStyle="solid"
+                      size="large"
+                      onChange={v =>
+                        this.setState({ shareType: v.target.value })
+                      }
+                      disabled={this.state.hosting}
+                    >
+                      <Radio.Button value="webcam">Share Webcam</Radio.Button>
+                      <Radio.Button value="screen">Share Screen</Radio.Button>
+                    </Radio.Group>
+                  </div>
+                </div>
+              </div>
+            </div>
             <Chatroom username="Lecturer" />
-          </div>
-          <div className={s.menu}>
-            <Button type="primary" size="large" onClick={this.startHost}>
-              Start Hosting
-            </Button>
           </div>
         </div>
       );
+    }
     return (
       <div className={s.root}>
         <div className={s.container}>{body}</div>

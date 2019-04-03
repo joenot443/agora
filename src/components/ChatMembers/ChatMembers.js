@@ -39,7 +39,7 @@ class Members extends Component {
       username = member.member.clientData.username;
       color = member.member.clientData.color;
     } else {
-      this.forceUpdate();
+      // this.forceUpdate();
     }
     // Returns a styled member element
     return (

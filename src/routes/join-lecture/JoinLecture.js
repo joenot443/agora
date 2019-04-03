@@ -164,8 +164,6 @@ class JoinLecture extends React.Component {
         if (error) console.info(error);
         else {
           this.setState({ live: true });
-          const video = document.getElementById('video');
-          video.play();
         }
       });
     }
@@ -205,6 +203,10 @@ class JoinLecture extends React.Component {
   };
 
   render() {
+    if (this.state.live) {
+      const video = document.getElementById('video');
+      video.play();
+    }
     return (
       <div className={s.root}>
         <div className={s.container}>
@@ -218,6 +220,7 @@ class JoinLecture extends React.Component {
                   className={s.video}
                   hidden={!this.state.live}
                   controls
+                  autoPlay
                 />
                 <div className={s.notPlaying} hidden={this.state.live}>
                   This lecture is not currently live!

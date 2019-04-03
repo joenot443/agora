@@ -3,8 +3,6 @@
 
 .root {
   display: auto;
-  height: 80vh;
-  min-height: 1000px;
 }
 
 .content {
@@ -31,4 +29,8 @@
   font-weight: 500;
   text-align: center;
   padding: 30px 10%;
+  height: 540px;
+  width: 720px;
+  display: flex;
+  align-items: center;
 }

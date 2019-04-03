@@ -42,10 +42,14 @@ async function getKurentoClient() {
 }
 
 function sendWSMessage(ws, msg) {
-  if (!ws.readyState === ws.OPEN) {
-    console.info('Closing socket');
-  } else {
-    ws.send(JSON.stringify(msg));
+  try {
+    if (!ws.readyState === ws.OPEN) {
+      console.info('Closing socket');
+    } else {
+      ws.send(JSON.stringify(msg));
+    }
+  } catch (error) {
+    console.info(error);
   }
 }
 

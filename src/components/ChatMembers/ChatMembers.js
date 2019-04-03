@@ -35,7 +35,7 @@ class Members extends Component {
     if (member.clientData !== undefined) {
       username = member.clientData.username;
       color = member.clientData.color;
-    } else if (member.member.clientData !== undefined) {
+    } else if (!member.member && member.member.clientData !== undefined) {
       username = member.member.clientData.username;
       color = member.member.clientData.color;
     } else {

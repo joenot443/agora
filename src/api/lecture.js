@@ -10,7 +10,7 @@ router.get('/lectures/active', async (req, res) => {
     if (!lectures.length) {
       res.json({
         success: false,
-        message: 'No lectures currently active!',
+        message: 'No lecture streams are currently live!',
       });
       return;
     }

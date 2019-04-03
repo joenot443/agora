@@ -1,0 +1,58 @@
+@import '../variables.scss';
+
+$fontcolor:#fff;// #535763;
+
+a {
+  cursor: pointer !important;
+}
+
+.root {
+  box-shadow: $boxshadow;
+  z-index: 10;
+  height:60px;
+  background: #242851;
+
+  .container {
+    @include grid(1fr 1fr, 1fr, 0, start);
+    @include wh100;
+    padding: 0 30px;
+    max-width: var(--max-content-width);
+  }
+
+  * {
+    user-select: none;
+    text-decoration: none !important;
+  }
+}
+
+.brand {
+  padding: 0px 22px;
+}
+
+.logo {
+  position: relative;
+  top:1px;
+  max-width: 90px;
+}
+
+.right {
+  justify-self: end;
+}
+
+.link {
+  transition: 200ms;
+  color: $fontcolor;
+  font-size: 14px;
+  padding: 4px 22px;
+  text-decoration: none;
+  display: inline-block;
+
+  &:hover {
+    color: $logo;
+  }
+}
+
+
+.spacer {
+  color: $fontcolor;
+}

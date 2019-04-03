@@ -19,9 +19,10 @@ class Layout extends React.Component {
       <div className={s.app}>
         <Header />
         <div className={s.layout}>
-          <Sidebar />
+          {/*<Sidebar />*/}
           <div className={s.body}>{this.props.children}</div>
         </div>
+        <Footer />
       </div>
     );
   }

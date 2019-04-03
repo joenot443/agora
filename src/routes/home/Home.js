@@ -4,36 +4,106 @@ import { graphql, compose } from 'react-apollo';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { Button } from 'antd';
 import superagent from 'superagent';
+import logo from './logo.png';
 
-import s from './Home.css';
+import s from './Home.scss';
 import LecturePreview from '../../components/LecturePreview/LecturePreview';
+import LiveBadge from '../../components/LiveBadge/LiveBadge';
+import CategoryCard from '../../components/CategoryCard/CategoryCard';
 
 class Home extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      lectures: [],
-      message: null,
     };
   }
 
-  componentDidMount = async () => {
-    const response = (await superagent.get('/api/lectures/active')).body;
-    if (response.success && response.data.length)
-      this.setState({ lectures: response.data });
-    else this.setState({ message: response.message });
-  };
 
   render() {
     return (
       <div className={s.root}>
+        <div className={s.banner}>
+          <span className={s.active}>Featured</span>
+          <span>Science</span>
+          <span>Languages</span>
+          <span>History</span>
+          <div></div>
+        </div>
         <div className={s.container}>
-          <h1>Live Lectures</h1>
-          {this.state.lectures.length ? (
-            this.state.lectures.map(l => <LecturePreview {...l} />)
-          ) : (
-            <h4>{this.state.message}</h4>
-          )}
+          <div className={s.left}>
+            <div className={s.preview} id={s.one}>
+              <div className={s.overlay}>
+                <LiveBadge />
+                <div className={s.desc}>
+                  <p>Amazing Lecture at MIT</p>
+                  <p>SomeGuy2394</p>
+                </div>
+              </div>
+            </div>
+            <div className={s.preview} id={s.two}>
+              <div className={s.overlay}>
+                <LiveBadge />
+                <div className={s.desc}>
+                  <p>Amazing Lecture at MIT</p>
+                  <p>SomeGuy2394</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className={s.preview} id={s.three}>
+            <div className={s.overlay}>
+              <LiveBadge />
+              <div className={s.desc}>
+                <p>Amazing Lecture at MIT</p>
+                <p>SomeGuy2394</p>
+              </div>
+            </div>
+          </div>
+          <div className={s.right}>
+            <div className={s.preview} id={s.four}>>
+              <div className={s.overlay}>
+                <LiveBadge />
+                <div className={s.desc}>
+                  <p>Amazing Lecture at MIT</p>
+                  <p>SomeGuy2394</p>
+                </div>
+              </div>
+            </div>
+            <div className={s.preview} id={s.five}>
+              <div className={s.overlay}>
+                <LiveBadge />
+                <div className={s.desc}>
+                  <p>Amazing Lecture at MIT</p>
+                  <p>SomeGuy2394</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className={s.cta}>
+          <div className={s.left}>
+            <div className={s.inner}>
+              <img className={s.logo} src={logo} alt="Logo" />
+            </div>
+          </div>
+          <div className={s.right}>
+            <div className={s.text}>
+              Welcome to Agora!<br></br>
+              Sign up for the best experience.
+            </div>
+            <Button type="primary" className={s.button} size="large">Sign up</Button>
+          </div>
+        </div>
+        <div className={s.categories}>
+          <h1>Categories</h1>
+          <div className={s.cards}>
+            <CategoryCard />
+            <CategoryCard />
+            <CategoryCard />
+            <CategoryCard />
+            <CategoryCard />
+            <CategoryCard />
+          </div>
         </div>
       </div>
     );

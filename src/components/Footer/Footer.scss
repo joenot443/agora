@@ -1,8 +1,12 @@
-@import '../variables.css';
+@import '../variables.scss';
+
+$color: #8e8f90;
 
 .footerRoot {
-  background: #333;
-  color: #fff;
+  display:block;
+  background: #f6f6f6;
+  color: $color;
+
 }
 
 .footerContainer {
@@ -13,11 +17,11 @@
 }
 
 .text {
-  color: rgba(255, 255, 255, 0.5);
+  color: $color;
 }
 
 .spacer {
-  color: rgba(255, 255, 255, 0.3);
+  color: $color;
 }
 
 .text,
@@ -29,10 +33,10 @@
 .link,
 .link:active,
 .link:visited {
-  color: rgba(255, 255, 255, 0.6);
+  color: $color;
   text-decoration: none;
 }
 
 .link:hover {
-  color: rgba(255, 255, 255, 1);
+  color: $color;
 }

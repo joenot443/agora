@@ -1,8 +1,9 @@
 import React from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import PropTypes from 'prop-types';
-import s from './LecturePreview.css';
+import s from './LecturePreview.scss';
 import Link from '../Link/Link';
+import LiveBadge from '../LiveBadge/LiveBadge';
 
 class LecturePreview extends React.Component {
   static propTypes = {
@@ -12,17 +13,18 @@ class LecturePreview extends React.Component {
   };
   render() {
     return (
-      <div className={s.root}>
-        <Link to={`/join-lecture/${this.props.id}`}>
-          <div className={s.previewContainer}>
-            <img src="/img.jpg" className={s.img} />
-            <div className={s.desc}>
-              <span className={s.title}>{this.props.title}</span>
-              <span className={s.user}>{this.props.description}</span>
-            </div>
+      <Link className={s.root} to={`/join-lecture/${this.props.id}`}>
+        <div className={s.previewContainer}>
+          <div className={s.img}>
+            <LiveBadge />
+          
           </div>
-        </Link>
-      </div>
+          <div className={s.desc}>
+            <span className={s.title}>{this.props.title}</span>
+            <span className={s.user}>{this.props.description}</span>
+          </div>
+        </div>
+      </Link>
     );
   }
 }

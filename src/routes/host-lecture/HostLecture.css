@@ -4,6 +4,7 @@
 .root {
   display: auto;
   height: 80vh;
+  min-height: 1000px;
 }
 
 .content {

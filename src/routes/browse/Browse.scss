@@ -3,8 +3,9 @@
 @import '../../components/variables.css';
 
 .root {
-  padding-left: 20px;
-  padding-right: 20px;
+  padding: 0 40px;
+  width:100%;
+  min-height:1000px;
 }
 
 .container {

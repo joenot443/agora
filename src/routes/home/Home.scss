@@ -1,0 +1,167 @@
+
+@import '../../components/variables.scss';
+
+
+.root {
+  width:100%;
+  min-height:1000px;
+}
+
+.container {
+  background: $logo;
+  border-top: 1px solid $logo;
+  border-bottom: 1px solid $logo;
+  @include grid(1fr 2fr 1fr, 1fr, 2px);
+  width:100%;
+  height:500px;
+
+  .left {
+    @include grid(1fr, 1fr 1fr, 2px);
+    @include wh100;
+  }
+
+  .right {
+    @include grid(1fr, 1fr 1fr, 2px);
+    @include wh100;
+  }
+}
+
+.preview {
+  @include wh100;
+  position: relative;
+  cursor: pointer;
+  .overlay {
+    transition: 300ms;
+    @include wh100;
+    position: absolute;
+    top:0;
+    left:0;
+    background: rgba(0,0,0,0.1);
+
+    .desc {
+      position: absolute;
+      bottom:0px;
+      right: 0px;
+      margin:10px;
+      background: rgba(0,0,0,0.5);
+      padding: 3px 10px;
+      border-radius: 3px;
+
+      p {
+        margin:0;
+        color:#fff;
+        font-weight: 400;
+        font-size: 12px;
+        color:#ddd;
+        text-align: end;
+        &:nth-child(1){
+          font-weight: 500;
+          font-size: 14px;
+          color:#fff;
+        }
+      }
+      
+    }
+  }
+
+  &:hover {
+    .overlay {
+      background: rgba(0,0,0,0);
+    }
+  }
+}
+
+.banner {
+  @include grid(auto auto auto auto 1fr, 1fr, 30px, start);
+  width:100%;
+  height:60px;
+  padding: 0px 40px;
+
+  font-weight: 300;
+  font-size: 16px;
+  color:#242851;
+  span {
+    @include grid(1fr, 1fr, 0, start);
+    &.active {
+      color:$logo;
+    }
+  }
+//  background: #242851;
+}
+
+.cta {
+  @include grid(1fr 1fr);
+  width:100%;
+  height:180px;
+  box-shadow: rgba(50, 50, 93, 0.1) 0 0 0 1px, rgba(50, 50, 93, 0.1) 0 2px 5px 1px,
+  rgba(0, 0, 0, 0.07) 0 1px 1.5px 1px, rgba(0, 0, 0, 0.08) 0 1px 2px 1px;
+
+  .left {
+    padding:30px 0;
+    @include wh100;
+    .inner {
+      @include grid(1fr, 1fr, 0, end, center);
+      @include wh100;
+      padding: 5px 130px 5px 0px;
+      border-right:1px solid #e8e8e8;
+
+      .logo {
+        position: relative;
+        top:1px;
+        max-width: 270px;
+      }
+    }
+  }
+
+  .right {
+    @include wh100;
+    padding: 35px 65px;
+    .text {
+      color:#444;
+      font-size: 18px;
+      font-weight: 400;
+      margin-bottom: 15px;
+    }
+
+  }
+}  
+
+#one {
+  background-image: url('https://uploads.panopto.com/2017/10/19105507/DSC02619.jpg');
+  background-size: cover;
+}
+
+#two {
+  background-image: url('https://cdn1.i-scmp.com/sites/default/files/video/thumbnail/china_gingko_thumbnail_0.jpg');
+  background-size: cover;
+}
+
+#three {
+  background-image: url('https://ehutb.ehu.es/uploads/pic/5c73f8b0f82b2b1d698b4588/joseluis.jpg');
+  background-size: cover;
+}
+
+#four {
+  background-image: url('http://gigaom2.files.wordpress.com/2014/02/fk1a6467.jpg');
+  background-size: cover;
+}
+
+#five {
+  background-image: url('https://t3.ftcdn.net/jpg/02/25/53/10/240_F_225531087_I4eeeDobfr75jqHxm4XvdEiY7gMIvV83.jpg');
+  background-size: cover;
+}
+
+
+
+.categories {
+  padding: 0px 40px 100px 40px;
+
+  h1 {  
+    margin-bottom:20px;
+
+  }
+
+  .cards {
+    @include grid(1fr 1fr 1fr 1fr 1fr 1fr);
+  }
+}

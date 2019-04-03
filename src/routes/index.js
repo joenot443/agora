@@ -39,6 +39,10 @@ const routes = {
       load: () => import(/* webpackChunkName: 'admin' */ './admin'),
     },
     {
+      path: '/browse',
+      load: () => import(/* webpackChunkName: 'admin' */ './browse'),
+    },
+    {
       path: '/host-lecture',
       children: [
         {

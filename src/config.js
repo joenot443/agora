@@ -23,9 +23,11 @@ module.exports = {
       `http://localhost:${process.env.PORT || 3069}`,
   },
 
-  // Database
-  databaseUrl:
-    process.env.DATABASE_URL || 'mysql://root:root@127.0.0.1:3306/agora',
+  // // Database
+  // databaseUrl:
+  //   process.env.DATABASE_URL || 'mysql://root:root@127.0.0.1:3306/agora',
+
+  databaseUrl: process.env.DATABASE_URL || 'mysql://root:root@localhost/agora',
 
   // Kurento
   kurentoUrl: process.env.KURENTO_URL || 'ws://52.23.218.141:8888/kurento',

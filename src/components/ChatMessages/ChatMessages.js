@@ -32,9 +32,10 @@ class Messages extends Component {
 
   // Renders a single message object and returns formatted message to display
   renderMessage(message) {
+    console.info(message);
     const { member, text } = message;
     const { currentMember } = this.props;
-    const messageFromMe = member.id === currentMember.id;
+    const messageFromMe = member && member.id === currentMember.id;
     const className = messageFromMe
       ? 'Messages-message currentMember'
       : 'Messages-message';
@@ -42,10 +43,12 @@ class Messages extends Component {
       <li className={s[className]}>
         <span
           className={s.avatar}
-          style={{ backgroundColor: member.clientData.color }}
+          style={{ backgroundColor: member ? member.clientData.color : 'blue' }}
         />
         <div className={s['Message-content']}>
-          <div className={s.username}>{member.clientData.username}</div>
+          <div className={s.username}>
+            {member ? member.clientData.username : 'user'}
+          </div>
           <div className={s.text}>{text}</div>
         </div>
       </li>
